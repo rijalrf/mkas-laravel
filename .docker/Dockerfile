@@ -1,12 +1,36 @@
 FROM php:8.2-fpm
 
-RUN apt-get update && apt-get install -y     git curl libpng-dev libonig-dev libxml2-dev zip unzip libjpeg-dev libfreetype6-dev
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev
 
+# Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
+# Set PHP configuration for temporary files
+RUN echo "upload_tmp_dir = /tmp" >> /usr/local/etc/php/conf.d/docker-php-upload.ini \
+    && echo "sys_temp_dir = /tmp" >> /usr/local/etc/php/conf.d/docker-php-upload.ini
+
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www
+
+# Ensure /tmp is writable
+RUN chmod 1777 /tmp
+
 USER root

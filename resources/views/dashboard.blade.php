@@ -83,8 +83,8 @@
                 @endphp
                 <button onclick="window.location='{{ route('history.index') }}?category_id={{ $cat['id'] }}'" 
                     class="flex flex-col items-center gap-2 active:scale-95 transition-all text-center group">
-                    <div class="w-16 h-16 bg-transparent border border-gray-200 rounded-[24px] flex items-center justify-center shadow-none group-hover:border-blue-500 group-hover:bg-blue-50 transition-all overflow-hidden">
-                        <div class="w-7 h-7 flex items-center justify-center text-gray-900">
+                    <div class="w-16 h-16 bg-transparent border border-gray-200 dark:border-slate-700 rounded-[24px] flex items-center justify-center shadow-none group-hover:border-blue-500 group-hover:bg-blue-50 dark:group-hover:border-blue-400 dark:group-hover:bg-blue-900/20 transition-all overflow-hidden">
+                        <div class="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-slate-100">
                             @if($staticModel && $staticModel->image_url)
                                 <img src="{{ $staticModel->image_url }}" class="w-full h-full object-cover">
                             @else
@@ -168,10 +168,36 @@
             new Chart(document.getElementById('lineChart'), {
                 type: 'line',
                 data: { labels: {!! json_encode($chartMonths) !!}, datasets: [
-                    { label: 'In', data: {!! json_encode($chartTotalIn) !!}, borderColor: '#2563eb', backgroundColor: '#2563eb10', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 },
-                    { label: 'Out', data: {!! json_encode($chartTotalOut) !!}, borderColor: '#f43f5e', backgroundColor: '#f43f5e10', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 }
+                    { label: 'Pemasukan', data: {!! json_encode($chartTotalIn) !!}, borderColor: '#2563eb', backgroundColor: '#2563eb10', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 },
+                    { label: 'Pengeluaran', data: {!! json_encode($chartTotalOut) !!}, borderColor: '#f43f5e', backgroundColor: '#f43f5e10', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0 }
                 ]},
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, border: { display: false }, ticks: { font: chartFont, color: '#94a3b8' } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { 
+                            display: true,
+                            position: 'bottom',
+                            align: 'center',
+                            labels: {
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: chartFont,
+                                padding: 20
+                            }
+                        } 
+                    }, 
+                    scales: { 
+                        y: { display: false }, 
+                        x: { 
+                            grid: { display: false }, 
+                            border: { display: false }, 
+                            ticks: { font: chartFont, color: '#94a3b8' } 
+                        } 
+                    } 
+                }
             });
 
             @if($pieData->count() > 0)

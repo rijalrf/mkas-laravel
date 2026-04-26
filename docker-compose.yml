@@ -9,6 +9,9 @@ services:
       - ./:/var/www
     networks:
       - default
+    depends_on:
+      mkas-db:
+        condition: service_healthy
 
   mkas-web:
     image: nginx:alpine
@@ -22,6 +25,8 @@ services:
     networks:
       - default
       - nginx-proxy
+    depends_on:
+      - mkas-app
 
   mkas-db:
     image: mysql:8.0
@@ -34,6 +39,11 @@ services:
       - mkas-dbdata:/var/lib/mysql
     networks:
       - default
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   default:

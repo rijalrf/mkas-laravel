@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ 
     darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-}" :class="{ 'dark': darkMode }">
+}" :class="{ 'dark': darkMode }" class="h-full">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -36,7 +36,7 @@
             .dark nav { background-color: #1e293b; border-color: #334155; }
         </style>
     </head>
-    <body class="bg-gray-50 text-gray-900 antialiased leading-relaxed" 
+    <body class="bg-gray-50 text-gray-900 antialiased leading-relaxed h-full overflow-hidden" 
           x-data="{ 
             sheetOpen: false, 
             sheetView: 'menu', 
@@ -88,9 +88,9 @@
             </div>
         </div>
 
-        <div class="min-h-screen flex flex-col max-w-md mx-auto bg-gray-50 shadow-sm relative overflow-x-hidden">
+        <div class="h-full flex flex-col max-w-md mx-auto bg-gray-50 shadow-sm relative overflow-x-hidden">
             <!-- TOP HEADER -->
-            <header class="bg-white sticky top-0 z-30 border-b border-gray-200 h-16 flex items-center shrink-0 px-2">
+            <header class="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 h-16 flex items-center shrink-0 px-2">
                 <div class="w-full px-3 flex items-center justify-between">
                     <div class="w-10">
                         @if(!request()->routeIs('dashboard'))
@@ -99,10 +99,14 @@
                             </a>
                         @endif
                     </div>
-                    <h1 class="text-lg font-semibold text-gray-900 tracking-tight">{{ $title ?? 'Dashboard' }}</h1>
+                    <h1 class="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">{{ $title ?? 'Dashboard' }}</h1>
                     <div class="w-10 flex justify-end">
-                        @if(request()->routeIs('history.index') || request()->routeIs('deposits.index'))
-                            <button @click="openSheet(request()->routeIs('history.index') ? 'filter' : 'filter-deposit')" class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                        @if(request()->routeIs('history.index'))
+                            <button @click="openSheet('filter')" class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
+                            </button>
+                        @elseif(request()->routeIs('deposits.index'))
+                            <button @click="openSheet('filter-deposit')" class="p-2 text-gray-400 hover:text-blue-600 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
                             </button>
                         @endif
@@ -110,14 +114,14 @@
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto pb-36 p-4 space-y-5">
+            <main class="flex-1 overflow-y-auto p-4 space-y-5">
                 {{ $slot }}
                 <div class="h-12 shrink-0"></div>
             </main>
 
             <!-- BOTTOM NAVIGATION (DASHBOARD ONLY) -->
             @if(request()->routeIs('dashboard'))
-            <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 max-w-md mx-auto h-16 flex items-center shrink-0 px-2">
+            <nav class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 h-16 flex items-center shrink-0 px-2">
                 <div class="flex-1 flex flex-col items-center justify-center gap-0.5 {{ request()->routeIs('dashboard') ? 'text-blue-600' : 'text-gray-400' }}" onclick="window.location='{{ route('dashboard') }}'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
                     <span class="text-[10px] font-medium">Home</span>
@@ -127,7 +131,7 @@
                     <span class="text-[10px] font-medium">Riwayat</span>
                 </div>
                 <div class="flex-1 flex justify-center -mt-10">
-                    <button @click="openSheet('menu')" class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-gray-50 active:scale-95 transition-all">
+                    <button @click="openSheet('menu')" class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg border-4 border-gray-50 dark:border-slate-800 active:scale-95 transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                     </button>
                 </div>
@@ -146,31 +150,31 @@
             <div x-cloak x-show="sheetOpen" class="fixed inset-0 z-50">
                 <div x-show="sheetOpen" x-transition.opacity @click="closeSheet()" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
                 <div x-show="sheetOpen" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full" 
-                     class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-xl p-6 overflow-hidden flex flex-col max-h-[90vh]">
-                    <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6 shrink-0"></div>
+                     class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white dark:bg-slate-900 rounded-t-2xl shadow-xl p-6 overflow-hidden flex flex-col max-h-[90vh]">
+                    <div class="w-12 h-1 bg-gray-200 dark:bg-slate-700 rounded-full mx-auto mb-6 shrink-0"></div>
                     <div class="overflow-y-auto hide-scroll flex-1 px-1">
                         <!-- Selection Menu -->
                         <template x-if="sheetView === 'menu'">
                             <div class="space-y-6 w-full text-center">
-                                <h3 class="text-md font-semibold text-gray-800">Buat transaksi baru</h3>
+                                <h3 class="text-md font-semibold text-gray-800 dark:text-white">Buat transaksi baru</h3>
                                 <div class="grid grid-cols-3 gap-3 w-full">
                                     <button @click="selectType('IN')" class="flex flex-col items-center gap-3 p-3 group active:scale-95 transition-all">
-                                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                        <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-100 dark:border-blue-800 group-hover:bg-blue-600 group-hover:text-white transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" /></svg>
                                         </div>
-                                        <span class="text-xs font-medium text-gray-600">Kas masuk</span>
+                                        <span class="text-xs font-medium text-gray-600 dark:text-slate-400">Kas masuk</span>
                                     </button>
                                     <button @click="selectType('OUT')" class="flex flex-col items-center gap-3 p-3 group active:scale-95 transition-all">
-                                        <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center border border-rose-100 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                                        <div class="w-16 h-16 bg-rose-50 dark:bg-rose-900/30 text-rose-600 rounded-2xl flex items-center justify-center border border-rose-100 dark:border-rose-800 group-hover:bg-rose-600 group-hover:text-white transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" /></svg>
                                         </div>
-                                        <span class="text-xs font-medium text-gray-600">Kas keluar</span>
+                                        <span class="text-xs font-medium text-gray-600 dark:text-slate-400">Kas keluar</span>
                                     </button>
                                     <a href="{{ route('deposits.create') }}" class="flex flex-col items-center gap-3 p-3 group active:scale-95 transition-all">
-                                        <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center border border-amber-100 group-hover:bg-amber-600 group-hover:text-white transition-all">
+                                        <div class="w-16 h-16 bg-amber-50 dark:bg-amber-900/30 text-amber-600 rounded-2xl flex items-center justify-center border border-amber-100 dark:border-amber-800 group-hover:bg-amber-600 group-hover:text-white transition-all">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" /></svg>
                                         </div>
-                                        <span class="text-xs font-medium text-gray-600">Bayar iuran</span>
+                                        <span class="text-xs font-medium text-gray-600 dark:text-slate-400">Bayar iuran</span>
                                     </a>
                                 </div>
                             </div>
@@ -181,16 +185,16 @@
                             <div class="space-y-4">
                                 <div class="flex items-center gap-2 px-1">
                                     <button @click="sheetView = 'menu'" class="p-1 text-gray-400 hover:text-blue-600 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg></button>
-                                    <h3 class="text-md font-semibold text-gray-800">Pilih kategori</h3>
+                                    <h3 class="text-md font-semibold text-gray-800 dark:text-white">Pilih kategori</h3>
                                 </div>
-                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden divide-y divide-gray-50 max-h-[60vh] overflow-y-auto hide-scroll shadow-sm">
+                                <div class="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden divide-y divide-gray-50 dark:divide-slate-700 max-h-[60vh] overflow-y-auto hide-scroll shadow-sm">
                                     @foreach(\App\Models\Category::getStaticList() as $cat)
-                                        <a :href="'/transactions/create/' + selectedType + '?category_id={{ $cat['id'] }}'" class="w-full text-left p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group">
+                                        <a :href="'/transactions/create/' + selectedType + '?category_id={{ $cat['id'] }}'" class="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors flex items-center justify-between group">
                                             <div class="flex items-center gap-4 text-left">
-                                                <div class="w-9 h-9 bg-{{ $cat['color'] }}-50 text-{{ $cat['color'] }}-600 rounded-lg flex items-center justify-center shrink-0">
+                                                <div class="w-9 h-9 bg-{{ $cat['color'] }}-50 dark:bg-{{ $cat['color'] }}-900/30 text-{{ $cat['color'] }}-600 rounded-lg flex items-center justify-center shrink-0">
                                                     {!! \App\Models\Category::getIconHtml($cat['icon'], "w-5 h-5") !!}
                                                 </div>
-                                                <span class="text-sm font-medium text-gray-700">{{ $cat['name'] }}</span>
+                                                <span class="text-sm font-medium text-gray-700 dark:text-slate-300">{{ $cat['name'] }}</span>
                                             </div>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                                         </a>
@@ -202,29 +206,29 @@
                         <!-- Filters -->
                         <template x-if="sheetView === 'filter' || sheetView === 'filter-deposit'">
                             <div class="space-y-6 text-left">
-                                <h3 class="text-md font-semibold text-gray-800 px-1">Filter riwayat</h3>
+                                <h3 class="text-md font-semibold text-gray-800 dark:text-white px-1">Filter riwayat</h3>
                                 <form :action="sheetView === 'filter' ? '{{ route('history.index') }}' : '{{ route('deposits.index') }}'" method="GET" class="space-y-5">
                                     <template x-if="sheetView === 'filter'">
                                         <div class="grid grid-cols-2 gap-3">
                                             <div class="space-y-1.5">
                                                 <label class="text-xs font-semibold text-gray-400 uppercase tracking-widest ml-1">Tgl mulai</label>
-                                                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                                                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                                             </div>
                                             <div class="space-y-1.5">
                                                 <label class="text-xs font-semibold text-gray-400 uppercase tracking-widest ml-1">Tgl selesai</label>
-                                                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                                                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full px-3 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                                             </div>
                                         </div>
                                     </template>
                                     <template x-if="sheetView === 'filter-deposit'">
                                         <div class="space-y-1.5">
                                             <label class="text-xs font-semibold text-gray-400 uppercase tracking-widest ml-1">Pilih bulan</label>
-                                            <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                                            <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                                         </div>
                                     </template>
                                     <div class="space-y-1.5">
                                         <label class="text-xs font-semibold text-gray-400 uppercase tracking-widest ml-1">Status</label>
-                                        <select name="status" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                                        <select name="status" class="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                                             <option value="">Semua status</option>
                                             <option value="PENDING" {{ request('status') == 'PENDING' ? 'selected' : '' }}>PENDING</option>
                                             <option value="APPROVED" {{ request('status') == 'APPROVED' ? 'selected' : '' }}>APPROVED</option>
@@ -232,7 +236,7 @@
                                         </select>
                                     </div>
                                     <div class="flex gap-2 pt-4">
-                                        <button type="reset" class="flex-1 py-3.5 border border-gray-200 rounded-lg text-sm font-semibold text-gray-500 bg-white">Reset</button>
+                                        <button type="reset" class="flex-1 py-3.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm font-semibold text-gray-500 bg-white dark:bg-slate-800">Reset</button>
                                         <button type="submit" class="flex-[2] py-3.5 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md">Terapkan filter</button>
                                     </div>
                                 </form>
@@ -242,12 +246,12 @@
                         <!-- Admin Approvals -->
                         <template x-if="sheetView === 'approve-tx' || sheetView === 'reject-tx' || sheetView === 'approve-dp' || sheetView === 'reject-dp'">
                             <div class="space-y-6 text-left">
-                                <h3 class="text-md font-semibold text-gray-800" x-text="sheetView.includes('approve') ? 'Setujui permintaan' : 'Tolak permintaan'"></h3>
+                                <h3 class="text-md font-semibold text-gray-800 dark:text-white" x-text="sheetView.includes('approve') ? 'Setujui permintaan' : 'Tolak permintaan'"></h3>
                                 <form :action="sheetView.includes('tx') ? '/admin/transactions/' + categoryId + '/' + (sheetView.includes('approve') ? 'approve' : 'reject') : '/admin/deposits/' + categoryId + '/' + (sheetView.includes('approve') ? 'approve' : 'reject')" method="POST" class="space-y-4">
                                     @csrf
                                     <div class="space-y-1.5">
                                         <label class="text-xs font-semibold text-gray-400 uppercase tracking-widest ml-1">Catatan admin (Wajib)</label>
-                                        <textarea name="admin_note" required rows="4" placeholder="Tuliskan alasan atau catatan..." class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-blue-500"></textarea>
+                                        <textarea name="admin_note" required rows="4" placeholder="Tuliskan alasan atau catatan..." class="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"></textarea>
                                     </div>
                                     <button type="submit" 
                                         :class="sheetView.includes('approve') ? 'bg-emerald-600' : 'bg-rose-600'"
