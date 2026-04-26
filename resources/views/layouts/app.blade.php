@@ -34,6 +34,7 @@
             .dark .bg-gray-50 { background-color: #1e293b; }
             .dark header { background-color: #1e293b; border-color: #334155; }
             .dark nav { background-color: #1e293b; border-color: #334155; }
+            .dark .dark-hover:hover { background-color: rgba(37, 99, 235, 0.1) !important; }
         </style>
     </head>
     <body class="bg-gray-50 text-gray-900 antialiased leading-relaxed h-full overflow-hidden" 
@@ -73,18 +74,24 @@
             @if(session('error')) showToast('{{ session('error') }}', 'error'); @endif
           ">
         
-        <!-- POPUP ALERT (CENTERED) -->
-        <div x-cloak x-show="toast.show" x-transition.scale.origin.center 
-             class="fixed inset-0 flex items-center justify-center z-[100] px-6 pointer-events-none">
+        <!-- TOP TOAST ALERT -->
+        <div x-cloak x-show="toast.show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="-translate-y-full opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="translate-y-0 opacity-100"
+             x-transition:leave-end="-translate-y-full opacity-0"
+             class="fixed top-4 left-0 right-0 z-[100] px-6 pointer-events-none flex justify-center">
             <div :class="toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'" 
-                 class="px-6 py-4 rounded-2xl shadow-2xl text-white text-center flex flex-col items-center gap-2 pointer-events-auto">
+                 class="px-5 py-3 rounded-2xl shadow-xl text-white flex items-center gap-3 pointer-events-auto max-w-xs w-full">
                 <template x-if="toast.type === 'success'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </template>
                 <template x-if="toast.type === 'error'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                 </template>
-                <p class="text-sm font-bold uppercase tracking-widest" x-text="toast.message"></p>
+                <p class="text-xs font-bold uppercase tracking-widest leading-tight" x-text="toast.message"></p>
             </div>
         </div>
 
