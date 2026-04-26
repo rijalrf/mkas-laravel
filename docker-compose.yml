@@ -1,0 +1,45 @@
+services:
+  mkas-app:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    container_name: mkas-app
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    networks:
+      - default
+
+  mkas-web:
+    image: nginx:alpine
+    container_name: mkas-web
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./:/var/www
+      - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - default
+      - nginx-proxy
+
+  mkas-db:
+    image: mysql:8.0
+    container_name: mkas-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mkas_db
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mkas-dbdata:/var/lib/mysql
+    networks:
+      - default
+
+networks:
+  default:
+  nginx-proxy:
+    external: true
+
+volumes:
+  mkas-dbdata:
+    driver: local
