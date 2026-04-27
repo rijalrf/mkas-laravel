@@ -6,6 +6,7 @@
         <form action="{{ route('transactions.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="tx-form">
             @csrf
             <input type="hidden" name="type" value="{{ $type }}">
+            <input type="hidden" name="payment_plan_id" value="{{ $paymentPlanId ?? '' }}">
 
             <!-- Category Display -->
             <div class="space-y-1.5">

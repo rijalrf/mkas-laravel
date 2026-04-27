@@ -26,4 +26,9 @@ class PaymentPlan extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
 }

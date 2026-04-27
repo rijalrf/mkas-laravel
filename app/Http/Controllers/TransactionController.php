@@ -18,7 +18,8 @@ class TransactionController extends Controller
         $selectedCategoryId = $request->category_id;
         $amount = $request->amount;
         $description = $request->description;
-        return view('transactions.create', compact('categories', 'type', 'selectedCategoryId', 'amount', 'description'));
+        $paymentPlanId = $request->payment_plan_id;
+        return view('transactions.create', compact('categories', 'type', 'selectedCategoryId', 'amount', 'description', 'paymentPlanId'));
     }
 
     public function store(Request $request)
@@ -29,6 +30,7 @@ class TransactionController extends Controller
             'description' => 'required|string',
             'category_id' => 'required',
             'photo' => 'required|image|max:5120', // Maksimal 5MB
+            'payment_plan_id' => 'nullable|exists:payment_plans,id',
         ]);
 
         $user = Auth::user();
@@ -52,7 +54,7 @@ class TransactionController extends Controller
 
         $dbCategoryId = Category::ensureExists($request->category_id);
 
-        Transaction::create([
+        $transaction = Transaction::create([
             'type' => $request->type,
             'amount' => $request->amount,
             'description' => $request->description,
@@ -60,7 +62,12 @@ class TransactionController extends Controller
             'photo' => $photoPath,
             'user_id' => $user->id,
             'status' => 'PENDING',
+            'payment_plan_id' => $request->payment_plan_id,
         ]);
+
+        if ($request->payment_plan_id) {
+            \App\Models\PaymentPlan::where('id', $request->payment_plan_id)->update(['status' => 'PENDING']);
+        }
 
         return redirect()->route('dashboard')->with('success', 'Transaksi berhasil diajukan!');
     }

@@ -11,14 +11,22 @@ class PaymentPlanController extends Controller
 {
     public function index()
     {
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+
         $plans = PaymentPlan::with('category')
+            ->whereYear('created_at', $currentYear)
+            ->whereMonth('created_at', $currentMonth)
             ->latest()
             ->get();
+
+        $activePlans = $plans->whereIn('status', ['NEW', 'PENDING', 'REJECTED']);
+        $paidPlans = $plans->where('status', 'APPROVED');
 
         $totalAmount = $plans->sum('amount');
         $categories = Category::all();
 
-        return view('payment-plans.index', compact('plans', 'totalAmount', 'categories'));
+        return view('payment-plans.index', compact('activePlans', 'paidPlans', 'totalAmount', 'categories', 'currentMonth', 'currentYear'));
     }
 
     public function store(Request $request)
@@ -34,7 +42,7 @@ class PaymentPlanController extends Controller
             'category_id' => $request->category_id,
             'description' => $request->description,
             'amount' => $request->amount,
-            'status' => 'PENDING',
+            'status' => 'NEW',
         ]);
 
         return redirect()->route('payment-plans.index')->with('success', 'Rencana pembayaran berhasil ditambahkan');

@@ -20,7 +20,13 @@ class Transaction extends Model
         'user_id',
         'category_id',
         'reference_number',
+        'payment_plan_id',
     ];
+
+    public function paymentPlan()
+    {
+        return $this->belongsTo(PaymentPlan::class);
+    }
 
     protected static function boot()
     {

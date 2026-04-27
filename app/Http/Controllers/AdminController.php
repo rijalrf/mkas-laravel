@@ -35,6 +35,11 @@ class AdminController extends Controller
         }
 
         $transaction->update($data);
+
+        if ($transaction->payment_plan_id) {
+            \App\Models\PaymentPlan::where('id', $transaction->payment_plan_id)->update(['status' => 'APPROVED']);
+        }
+
         return redirect()->route('history.show', $transaction->id)->with('success', 'Transaksi disetujui!');
     }
 
@@ -55,6 +60,11 @@ class AdminController extends Controller
         }
 
         $transaction->update($data);
+
+        if ($transaction->payment_plan_id) {
+            \App\Models\PaymentPlan::where('id', $transaction->payment_plan_id)->update(['status' => 'REJECTED']);
+        }
+
         return redirect()->route('history.show', $transaction->id)->with('error', 'Transaksi ditolak!');
     }
 
