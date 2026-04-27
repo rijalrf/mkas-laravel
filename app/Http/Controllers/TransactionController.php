@@ -25,8 +25,8 @@ class TransactionController extends Controller
             'type' => 'required|in:IN,OUT',
             'amount' => 'required|numeric|min:1',
             'description' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'photo' => 'required_without:photo_base64|image|max:2048',
+            'category_id' => 'required',
+            'photo' => 'required|image|max:5120', // Maksimal 5MB
         ]);
 
         $user = Auth::user();
@@ -44,22 +44,17 @@ class TransactionController extends Controller
         }
 
         $photoPath = null;
-        if ($request->filled('photo_base64')) {
-            $image = $request->photo_base64;
-            $image = str_replace('data:image/jpeg;base64,', '', $image);
-            $image = str_replace(' ', '+', $image);
-            $imageName = 'receipts/' . time() . '_' . uniqid() . '.jpg';
-            Storage::disk('public')->put($imageName, base64_decode($image));
-            $photoPath = $imageName;
-        } elseif ($request->hasFile('photo')) {
+        if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('receipts', 'public');
         }
+
+        $dbCategoryId = Category::ensureExists($request->category_id);
 
         Transaction::create([
             'type' => $request->type,
             'amount' => $request->amount,
             'description' => $request->description,
-            'category_id' => $request->category_id,
+            'category_id' => $dbCategoryId,
             'photo' => $photoPath,
             'user_id' => $user->id,
             'status' => 'PENDING',

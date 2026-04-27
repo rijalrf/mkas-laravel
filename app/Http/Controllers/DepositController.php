@@ -14,8 +14,9 @@ class DepositController extends Controller
         $user = Auth::user();
         $query = Deposit::with('user')->latest();
         
-        if ($user->role !== 'admin') {
-            $query->where('user_id', $user->id);
+        // If not admin, only show APPROVED deposits by default (Transparency)
+        if ($user->role !== 'admin' && !$request->filled('user_id')) {
+            $query->where('status', 'APPROVED');
         }
 
         if ($request->filled('month')) {

@@ -1,4 +1,4 @@
-@foreach($deposits as $dp)
+@forelse($deposits as $dp)
     @php
         $tagColors = [
             'APPROVED' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
@@ -25,4 +25,11 @@
             </p>
         </div>
     </a>
-@endforeach
+@empty
+    @if(!request()->ajax())
+        <x-empty-state 
+            title="Belum Ada Iuran" 
+            message="Tidak ditemukan riwayat pembayaran iuran."
+        />
+    @endif
+@endforelse

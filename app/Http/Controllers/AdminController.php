@@ -107,14 +107,14 @@ class AdminController extends Controller
     public function storePaymentAccount(Request $request)
     {
         $request->validate([
-            'bank_name' => 'required|string',
-            'bank_code' => 'required|string',
-            'account_number' => 'required|string',
-            'account_name' => 'required|string',
-            'monthly_amount' => 'required|numeric',
+            'bank_name' => 'required|string|max:255',
+            'bank_code' => 'required|string|max:10',
+            'account_number' => 'required|string|max:50',
+            'account_name' => 'required|string|max:255',
+            'monthly_amount' => 'required|numeric|min:0',
         ]);
 
-        PaymentAccount::create($request->all());
+        PaymentAccount::updateOrCreate([], $request->all());
         return redirect()->route('profile.edit')->with('success', 'Master rekening diperbarui!');
     }
 
@@ -135,8 +135,6 @@ class AdminController extends Controller
         Category::create([
             'name' => $request->name,
             'image_url' => $request->image_url,
-            'icon' => 'square',
-            'color' => 'slate'
         ]);
         return back()->with('success', 'Kategori baru ditambahkan!');
     }

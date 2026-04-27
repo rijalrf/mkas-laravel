@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'icon', 'color'];
+    protected $fillable = ['name', 'image_url'];
 
     /**
      * Daftar Kategori Statis MKAS
@@ -47,6 +47,24 @@ class Category extends Model
         ];
 
         return $icons[$iconName] ?? $icons['dots-horizontal'];
+    }
+
+    /**
+     * Pastikan kategori dari list statis ada di database
+     */
+    public static function ensureExists($id)
+    {
+        $static = collect(self::getStaticList())->firstWhere('id', (int)$id);
+        if (!$static) {
+            return self::firstOrCreate(['name' => 'Lainnya'])->id;
+        }
+
+        $category = self::where('name', $static['name'])->first();
+        if (!$category) {
+            $category = self::create(['name' => $static['name']]);
+        }
+        
+        return $category->id;
     }
 
     public function transactions()

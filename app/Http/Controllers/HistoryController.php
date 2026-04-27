@@ -14,8 +14,10 @@ class HistoryController extends Controller
         $user = Auth::user();
         $query = Transaction::with(['category', 'user'])->latest();
 
-        if ($user->role !== 'admin') {
-            $query->where('user_id', $user->id);
+        // If not admin, only show APPROVED transactions by default (Transparency)
+        // If they specifically ask for their own data via user_id, show all statuses for that user
+        if ($user->role !== 'admin' && !$request->filled('user_id')) {
+            $query->where('status', 'APPROVED');
         }
 
         if ($request->filled('start_date')) {

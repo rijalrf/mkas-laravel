@@ -30,24 +30,36 @@
             </a>
 
             <!-- Theme Switcher -->
-            <div class="space-y-1.5 p-4 border-b border-gray-100 dark:border-slate-700">
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Tema aplikasi</label>
-                <div class="flex bg-gray-100 dark:bg-slate-900 p-1 rounded-xl gap-1 mt-1" x-data="{ 
-                    current: localStorage.getItem('theme') || 'system',
-                    setTheme(t) {
-                        this.current = t;
-                        if(t === 'system') {
-                            localStorage.removeItem('theme');
-                            this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        } else {
-                            localStorage.setItem('theme', t);
-                            this.darkMode = (t === 'dark');
-                        }
+            <div class="w-full flex items-center justify-between p-4" x-data="{ 
+                current: localStorage.getItem('theme') || 'system',
+                setTheme(t) {
+                    this.current = t;
+                    if(t === 'system') {
+                        localStorage.removeItem('theme');
+                        this.darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    } else {
+                        localStorage.setItem('theme', t);
+                        this.darkMode = (t === 'dark');
                     }
-                }">
-                    <button @click="setTheme('light')" :class="current === 'light' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-slate-400'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">Light</button>
-                    <button @click="setTheme('dark')" :class="current === 'dark' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-slate-400'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">Dark</button>
-                    <button @click="setTheme('system')" :class="current === 'system' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-slate-400'" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all">System</button>
+                }
+            }">
+                <div class="flex items-center gap-4">
+                    <div class="w-9 h-9 bg-indigo-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 rounded-lg flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 1.035-.84 1.875-1.875 1.875S16.5 7.41 16.5 6.375 17.34 4.5 18.375 4.5s1.875.84 1.875 1.875zM6.25 8.25c0 1.035-.84 1.875-1.875 1.875S2.5 9.285 2.5 8.25 3.34 6.375 4.375 6.375s1.875.84 1.875 1.875zM18.75 18.75c0 1.035-.84 1.875-1.875 1.875s-1.875-.84-1.875-1.875.84-1.875 1.875-1.875 1.875.84 1.875 1.875zM6.75 15.25c0 1.035-.84 1.875-1.875 1.875S3 16.285 3 15.25s.84-1.875 1.875-1.875 1.875.84 1.875 1.875zM12 12.75c0 1.38-1.12 2.5-2.5 2.5s-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5zM20.25 12.75c0 1.38-1.12 2.5-2.5 2.5s-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5zM15.75 16.5c0 1.38-1.12 2.5-2.5 2.5s-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5zM12.75 6.75c0 1.38-1.12 2.5-2.5 2.5s-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5z" /></svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700 dark:text-slate-200">Tema Aplikasi</span>
+                </div>
+                
+                <div class="flex bg-gray-100 dark:bg-slate-900 p-1 rounded-xl gap-1 h-9 shadow-inner">
+                    <button @click="setTheme('light')" :class="current === 'light' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-400 dark:text-slate-500'" class="px-3 rounded-lg transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M3 12h2.25m.386-6.364l1.591 1.591M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>
+                    </button>
+                    <button @click="setTheme('dark')" :class="current === 'dark' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-400 dark:text-slate-500'" class="px-3 rounded-lg transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+                    </button>
+                    <button @click="setTheme('system')" :class="current === 'system' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-400 dark:text-slate-500'" class="px-3 rounded-lg transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
+                    </button>
                 </div>
             </div>
 

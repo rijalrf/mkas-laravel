@@ -15,18 +15,10 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Base Query for Totals
-        $txQuery = Transaction::where('status', 'APPROVED');
-        $dpQuery = Deposit::where('status', 'APPROVED');
-        
-        if ($user->role !== 'admin') {
-            $txQuery->where('user_id', $user->id);
-            $dpQuery->where('user_id', $user->id);
-        }
-
-        $totalIn = $txQuery->clone()->where('type', 'IN')->sum('amount');
-        $totalOut = $txQuery->clone()->where('type', 'OUT')->sum('amount');
-        $totalDeposit = $dpQuery->clone()->sum('amount');
+        // Base Query for Totals (Global for all users)
+        $totalIn = Transaction::where('status', 'APPROVED')->where('type', 'IN')->sum('amount');
+        $totalOut = Transaction::where('status', 'APPROVED')->where('type', 'OUT')->sum('amount');
+        $totalDeposit = Deposit::where('status', 'APPROVED')->sum('amount');
         
         $totalMasuk = $totalIn + $totalDeposit;
         $saldoUtama = $totalMasuk - $totalOut;

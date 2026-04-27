@@ -12,15 +12,16 @@
 
     <!-- CATEGORY LIST -->
     <div class="bg-white rounded-xl border border-gray-100 overflow-hidden divide-y divide-gray-50 shadow-sm">
-        @foreach($categories as $cat)
+        @forelse($categories as $cat)
             @php
-                $staticCat = collect(\App\Models\Category::getStaticList())->firstWhere('id', $cat->id);
-                $icon = $staticCat['icon'] ?? 'square';
-                $color = $staticCat['color'] ?? 'slate';
+                // Pencocokan berdasarkan NAMA agar konsisten dengan Dashboard
+                $staticMapping = collect(\App\Models\Category::getStaticList())->firstWhere('name', $cat->name);
+                $icon = $staticMapping['icon'] ?? 'dots-horizontal';
+                $color = $staticMapping['color'] ?? 'slate';
             @endphp
             <div class="p-4 flex items-center justify-between transition-all active:bg-gray-50">
                 <div class="flex items-center gap-4 text-left">
-                    <div class="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
+                    <div class="w-12 h-12 bg-{{ $color }}-50 dark:bg-{{ $color }}-900/20 text-{{ $color }}-500 rounded-xl flex items-center justify-center shrink-0 border border-{{ $color }}-100/50 overflow-hidden">
                         @if($cat->image_url)
                             <img src="{{ $cat->image_url }}" class="w-full h-full object-cover">
                         @else
@@ -41,7 +42,12 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                 </button>
             </div>
-        @endforeach
+        @empty
+            <x-empty-state 
+                title="Kategori Kosong" 
+                message="Belum ada kategori yang dibuat. Klik tombol tambah untuk memulai."
+            />
+        @endforelse
     </div>
 
     @push('bottom-sheet')

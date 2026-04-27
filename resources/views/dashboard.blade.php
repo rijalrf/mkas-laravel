@@ -75,25 +75,27 @@
 
     <!-- CATEGORY GRID (CLEAN NO-BG) -->
     <div class="space-y-4 mb-8">
-        <h4 class="text-sm font-medium text-gray-700 px-1 text-center">Kategori kas</h4>
         <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding-left: 4px; padding-right: 4px;">
-            @foreach(\App\Models\Category::getStaticList() as $cat)
+            @foreach($categories as $cat)
                 @php
-                    $staticModel = \App\Models\Category::find($cat['id']);
+                    // Ambil data mapping statis berdasarkan nama jika di DB tidak ada icon/color
+                    $staticMapping = collect(\App\Models\Category::getStaticList())->firstWhere('name', $cat->name);
+                    $icon = $cat->icon ?? ($staticMapping['icon'] ?? 'dots-horizontal');
+                    $color = $cat->color ?? ($staticMapping['color'] ?? 'blue');
                 @endphp
-                <button onclick="window.location='{{ route('history.index') }}?category_id={{ $cat['id'] }}'" 
+                <button onclick="window.location='{{ route('history.index') }}?category_id={{ $cat->id }}'" 
                     class="flex flex-col items-center gap-2 active:scale-95 transition-all text-center group">
                     <div class="w-16 h-16 bg-transparent border border-gray-200 dark:border-slate-700 rounded-[24px] flex items-center justify-center shadow-none group-hover:border-blue-500 group-hover:bg-blue-50 dark:group-hover:border-blue-400 dark:group-hover:bg-blue-900/20 transition-all overflow-hidden">
                         <div class="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-slate-100">
-                            @if($staticModel && $staticModel->image_url)
-                                <img src="{{ $staticModel->image_url }}" class="w-full h-full object-cover">
+                            @if($cat->image_url)
+                                <img src="{{ $cat->image_url }}" class="w-full h-full object-cover">
                             @else
-                                {!! \App\Models\Category::getIconHtml($cat['icon'], "w-full h-full") !!}
+                                {!! \App\Models\Category::getIconHtml($icon, "w-full h-full") !!}
                             @endif
                         </div>
                     </div>
-                    <span class="text-[10px] font-medium text-gray-600 text-center leading-tight h-8 flex items-center justify-center px-1">
-                        {{ $cat['name'] }}
+                    <span class="text-[10px] font-medium text-gray-600 text-center leading-tight h-8 flex items-center justify-center px-1 dark:text-slate-400">
+                        {{ $cat->name }}
                     </span>
                 </button>
             @endforeach

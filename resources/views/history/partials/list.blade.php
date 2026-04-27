@@ -1,4 +1,4 @@
-@foreach($transactions as $tx)
+@forelse($transactions as $tx)
     @php
         $tagColors = [
             'APPROVED' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
@@ -27,4 +27,11 @@
             </p>
         </div>
     </a>
-@endforeach
+@empty
+    @if(!request()->ajax())
+        <x-empty-state 
+            title="Belum Ada Transaksi" 
+            message="Catatan kas masih kosong untuk saat ini."
+        />
+    @endif
+@endforelse

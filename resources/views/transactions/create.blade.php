@@ -3,14 +3,15 @@
 
     <!-- FORM CARD -->
     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <form action="{{ route('transactions.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('transactions.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="tx-form">
             @csrf
             <input type="hidden" name="type" value="{{ $type }}">
 
-            <!-- Category Display (Static List Mapping) -->
+            <!-- Category Display -->
             <div class="space-y-1.5">
                 @php 
-                    $currentCat = collect(\App\Models\Category::getStaticList())->firstWhere('id', $selectedCategoryId);
+                    $staticList = \App\Models\Category::getStaticList();
+                    $currentCat = collect($staticList)->firstWhere('id', (int)$selectedCategoryId) ?? collect($staticList)->last();
                 @endphp
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kategori Terpilih</label>
                 <div class="w-full px-4 py-3 bg-{{ $currentCat['color'] ?? 'blue' }}-50 border border-{{ $currentCat['color'] ?? 'blue' }}-100 rounded-xl flex items-center justify-between">
@@ -21,10 +22,10 @@
                         <span class="text-sm font-bold text-{{ $currentCat['color'] ?? 'blue' }}-700 uppercase tracking-tight">{{ $currentCat['name'] ?? 'Kategori Umum' }}</span>
                     </div>
                 </div>
-                <input type="hidden" name="category_id" value="{{ $selectedCategoryId }}">
+                <input type="hidden" name="category_id" value="{{ $currentCat['id'] }}">
             </div>
 
-            <!-- Amount Input with Mask -->
+            <!-- Amount Input -->
             <div class="space-y-1.5" x-data="{ 
                 formattedAmount: '',
                 updateAmount(val) {
@@ -52,31 +53,26 @@
                 <x-input-error :messages="$errors->get('description')" class="mt-1" />
             </div>
 
-            <!-- File Upload with Preview & Compression -->
+            <!-- Photo Upload -->
             <div class="space-y-1.5" x-data="{ preview: null }">
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Bukti Foto</label>
                 <div class="relative group">
-                    <!-- Standard Input with Choice Hint -->
                     <label for="photo-input" class="cursor-pointer block">
                         <div id="photo-preview-box" class="w-full min-h-[120px] border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center gap-2 group-hover:bg-blue-50 group-hover:border-blue-200 transition-all overflow-hidden p-2">
-                            <template x-if="!preview">
-                                <div class="flex flex-col items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-300 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Kamera atau Galeri</p>
+                            <div x-show="!preview" class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-300 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Kamera atau Galeri</p>
+                            </div>
+                            <div x-show="preview" class="relative w-full h-full">
+                                <img :src="preview" class="w-full h-40 object-cover rounded-lg shadow-sm">
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="text-white text-[10px] font-bold uppercase">Ganti Foto</span>
                                 </div>
-                            </template>
-                            <template x-if="preview">
-                                <div class="relative w-full h-full">
-                                    <img :src="preview" class="w-full h-40 object-cover rounded-lg shadow-sm">
-                                    <div class="absolute inset-0 bg-black/20 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span class="text-white text-[10px] font-bold uppercase">Ganti Foto</span>
-                                    </div>
-                                </div>
-                            </template>
+                            </div>
                         </div>
                     </label>
-                    <input type="file" required id="photo-input" class="hidden" accept="image/*" capture="environment">
-                    <input type="hidden" name="photo_base64" id="compressed_photo">
+                    <input type="file" name="photo" id="photo-input" class="hidden" accept="image/*" 
+                        @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { preview = e.target.result; }; reader.readAsDataURL(file); }">
                 </div>
                 <x-input-error :messages="$errors->get('photo')" class="mt-1" />
             </div>
@@ -89,60 +85,4 @@
             </div>
         </form>
     </div>
-
-    @push('scripts')
-    <script>
-        // Image Preview & Compression
-        document.getElementById('photo-input').onchange = function(evt) {
-            const file = evt.target.files[0];
-            if (!file) return;
-
-            // Show Preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                // Alpine data binding fallback (using standard JS since it's outside x-data)
-                // We'll use a better approach by putting it inside the script
-            };
-
-            // Compress Logic
-            const imgReader = new FileReader();
-            imgReader.readAsDataURL(file);
-            imgReader.onload = event => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
-                    const MAX_HEIGHT = 800;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Convert to base64
-                    const dataurl = canvas.toDataURL('image/jpeg', 0.7);
-                    document.getElementById('compressed_photo').value = dataurl;
-                    
-                    // Update Preview UI manually for responsiveness
-                    const previewBox = document.getElementById('photo-preview-box');
-                    previewBox.innerHTML = `<img src="${dataurl}" class="w-full h-32 object-cover rounded-lg shadow-sm">`;
-                };
-            };
-        };
-    </script>
-    @endpush
 </x-app-layout>

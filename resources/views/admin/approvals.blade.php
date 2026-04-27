@@ -54,7 +54,11 @@
                 </div>
             </div>
             @empty
-            <p class="text-center py-10 text-[10px] font-bold text-slate-300 uppercase italic tracking-widest">Tidak ada antrian</p>
+                <x-empty-state 
+                    title="Antrian Kosong" 
+                    message="Semua transaksi telah diproses. Tidak ada antrian yang memerlukan persetujuan saat ini."
+                    class="bg-white rounded-[28px] border border-slate-100 shadow-sm"
+                />
             @endforelse
         </div>
     </div>
